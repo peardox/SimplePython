@@ -1,2 +1,2 @@
 # SimplePython
-A very basic Python demo
+A very basic EmbeddedPython demo

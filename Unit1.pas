@@ -1,5 +1,7 @@
 unit Unit1;
 
+ {$DEFINE USELOCAL}
+
 interface
 
 uses
@@ -19,6 +21,7 @@ type
     PyEmbed: TPyEmbeddedResEnvironment39;
     Panel1: TPanel;
     Button1: TButton;
+    PyLocal: TPyLocalEnvironment;
     procedure PyEmbedAfterActivate(Sender: TObject;
       const APythonVersion: string; const AActivated: Boolean);
     procedure PSUtilAfterImport(Sender: TObject);
@@ -28,13 +31,20 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
-  procedure Test;
+    PyIsActivated: Boolean;
+    procedure WriteLocalPythonJSON(const outfile: String; const version: String; const pythonpath: String; const libfile: String; const exefile: String);
+    procedure Test;
   public
     { Public declarations }
   end;
 
 var
   Form1: TForm1;
+
+const
+  JSONFileName = 'python.json';
+  AppName = 'SimplePython';
+  PyVersion = '3.9';
 
 implementation
 
@@ -79,30 +89,129 @@ begin
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
+{$IFDEF USELOCAL}
+var
+  JSONFile: String;
+  OutFile: String;
+  PyPath: String;
+{$ENDIF}
 begin
-  PyEmbed.Setup(PyEmbed.PythonVersion);
+  if not PyIsActivated then
+    begin
+      OutFile := '';
+      {$IFDEF USELOCAL}
+      // MacOSX with X64 CPU
+      {$IF DEFINED(MACOS64) AND DEFINED(CPUX64)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetLibraryPath) +
+                  AppName) +
+                  JSONFileName;
+      // MacOSX with ARM64 CPU (M1 etc)
+      {$ELSEIF DEFINED(MACOS64) AND DEFINED(CPUARM64)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetLibraryPath) +
+                  AppName) +
+                  JSONFileName;
+      // Windows X64 CPU
+      {$ELSEIF DEFINED(WIN64)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetHomePath) +
+                  AppName) +
+                  JSONFileName;
+      WriteLocalPythonJSON(OutFile, PyVersion,
+          '','', '');
+      // Windows 32 bit
+      {$ELSEIF DEFINED(WIN32)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetHomePath) +
+                  AppName + '-32') +
+                  JSONFileName;
+      // Linux X64 CPU
+      {$ELSEIF DEFINED(LINUX64)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetHomePath) +
+                  AppName) +
+                  JSONFileName;
+      // Android (64 CPU) Not presently working)
+      {$ELSEIF DEFINED(ANDROID)}
+      OutFile := IncludeTrailingPathDelimiter(
+                  IncludeTrailingPathDelimiter(
+                  System.IOUtils.TPath.GetHomePath) +
+                  AppName) +
+                  JSONFileName;
+      {$ELSE}
+      raise Exception.Create('Need to set OutFile for this build');
+      {$ENDIF}
+      if OutFile = '' then
+        begin
+          ShowMessage('Can''t create JSON file');
+          exit;
+        end;
+      PyLocal.FilePath := JSONFile;
+      PyLocal.PythonVersion := '3.9';
+      PyLocal.Setup(PyLocal.PythonVersion);
+      if not PyIsActivated then
+        ShowMessage('Python was not set up');
+      {$ELSE}
+      PyEmbed.Setup(PyEmbed.PythonVersion);
+      if not PyIsActivated then
+        ShowMessage('Python was not set up');
+      {$ENDIF}
+      Button1.Text := 'Run Python'
+    end
+  else
+    Test;
+end;
+
+procedure TForm1.WriteLocalPythonJSON(const outfile: String; const version: String; const pythonpath: String; const libfile: String; const exefile: String);
+var
+  JSONText: String;
+  JSONSharedLib: String;
+begin
+  JSONText := '[{{' +
+    '"' + version + '": {' +
+    '"home":"' + pythonpath + '",' +
+    '"shared_library":"' + libfile +'",' +
+    '"executable":"'+ exefile + '"' +
+    '}]';
+
 end;
 
 procedure TForm1.PyEmbedAfterSetup(Sender: TObject;
   const APythonVersion: string);
 begin
+  {$IFDEF USELOCAL}
+  PyLocal.Activate(PyLocal.PythonVersion);
+  {$ELSE}
   PyEmbed.Activate(PyEmbed.PythonVersion);
+  {$ENDIF}
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+{$IFDEF USELOCAL}
+  Form1.Caption := 'Using Local Python';
+{$ELSE}
+  Form1.Caption := 'Using Embedded Python';
+{$ENDIF}
+  PyIsActivated := False;
   // This needs changing when LocalEnvironment works - it's only cosmetic anyway
   if DirectoryExists(TPath.Combine(PyEmbed.EnvironmentPath, PyEmbed.PythonVersion)) then
     Button1.Text := 'Run Python'
   else
     Button1.Text := 'Setup Python';
-
 end;
 
 procedure TForm1.PSUtilAfterImport(Sender: TObject);
 begin
   Memo1.Lines.Add('PSUtil has imported');
   Test;
+  PyIsActivated := True;
 end;
 
 procedure TForm1.PSUtilAfterInstall(Sender: TObject);
