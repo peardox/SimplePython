@@ -71,13 +71,4 @@ object Form1: TForm1
     Left = 272
     Top = 120
   end
-  object PyLocal: TPyLocalEnvironment
-    AfterSetup = PyEmbedAfterSetup
-    AfterActivate = PyEmbedAfterActivate
-    AutoLoad = False
-    PythonEngine = PyEng
-    Distributions = <>
-    Left = 376
-    Top = 120
-  end
 end
