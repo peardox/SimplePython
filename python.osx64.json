@@ -1,8 +1,0 @@
-[{
-        "3.9": {
-            "home": "/Library/Frameworks/Python.framework/Versions/3.9",
-            "shared_library": "/Library/Frameworks/Python.framework/Versions/3.9/lib/libpython39.dylib",
-            "executable": "/Library/Frameworks/Python.framework/Versions/3.9/bin/python3.9"
-        }
-    }
-]
