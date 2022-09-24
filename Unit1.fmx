@@ -53,12 +53,12 @@ object Form1: TForm1
   end
   object PSUtil: TPSUtil
     AutoImport = False
-    AfterImport = PSUtilAfterImport
+    AfterImport = PackageAfterImport
     PythonEngine = PyEng
     PyEnvironment = PyEmbed
     ManagerKind = pip
     AutoInstall = False
-    AfterInstall = PSUtilAfterInstall
+    AfterInstall = PackageAfterInstall
     Left = 272
     Top = 248
   end
@@ -70,5 +70,19 @@ object Form1: TForm1
     PythonEngine = PyEng
     Left = 272
     Top = 120
+  end
+  object PyTorch1: TPyTorch
+    AfterImport = PackageAfterImport
+    PythonEngine = PyEng
+    PyEnvironment = PyEmbed
+    ManagerKind = pip
+    AfterInstall = PackageAfterInstall
+    Left = 272
+    Top = 312
+  end
+  object PyEnvironmentAddOnGetPip1: TPyEnvironmentAddOnGetPip
+    Environment = PyEmbed
+    Left = 504
+    Top = 312
   end
 end

@@ -8,9 +8,15 @@ uses
   PythonEngine, PyEnvironment.Embeddable,
   PyEnvironment.Embeddable.Res, PyEnvironment.Embeddable.Res.Python39,
   FMX.Memo.Types, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
-  FMX.PythonGUIInputOutput, PyCommon, PyModule, PyPackage, PSUtil, FMX.StdCtrls;
+  FMX.PythonGUIInputOutput, PyCommon, PyModule, PyPackage, PSUtil, FMX.StdCtrls,
+  PyTorch, PyEnvironment.AddOn, PyEnvironment.AddOn.GetPip,
+  PyPackage.Manager.Defs, PyPackage.Manager.Defs.Pip;
 
 type
+  TPipOptHelp = class Helper for TPyManagedPackage
+    procedure ExtraIndexUrl(const AURL: String);
+  end;
+
   TForm1 = class(TForm)
     PyEng: TPythonEngine;
     PyIO: TPythonGUIInputOutput;
@@ -19,13 +25,16 @@ type
     PyEmbed: TPyEmbeddedResEnvironment39;
     Panel1: TPanel;
     Button1: TButton;
+    PyTorch1: TPyTorch;
+    PyEnvironmentAddOnGetPip1: TPyEnvironmentAddOnGetPip;
     procedure FormCreate(Sender: TObject);
     procedure PyEmbedAfterSetup(Sender: TObject; const APythonVersion: string);
     procedure PyEmbedAfterActivate(Sender: TObject;
       const APythonVersion: string; const AActivated: Boolean);
-    procedure PSUtilAfterInstall(Sender: TObject);
-    procedure PSUtilAfterImport(Sender: TObject);
+    procedure PackageAfterInstall(Sender: TObject);
+    procedure PackageAfterImport(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure Log(const AMsg: String);
   private
     { Private declarations }
     PyIsActivated: Boolean;
@@ -45,6 +54,17 @@ const
 implementation
 
 {$R *.fmx}
+
+procedure TPipOptHelp.ExtraIndexUrl(const AURL: String);
+begin
+  TPyPackageManagerDefsPip(Managers.Pip).InstallOptions.ExtraIndexUrl := AUrl;
+end;
+
+procedure TForm1.Log(const AMsg: String);
+begin
+  Memo1.Lines.Add(AMsg);
+  Application.ProcessMessages;
+end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -75,30 +95,38 @@ end;
 procedure TForm1.PyEmbedAfterSetup(Sender: TObject;
   const APythonVersion: string);
 begin
-  PyEmbed.Activate(PyEmbed.PythonVersion);
-end;
-
-procedure TForm1.PSUtilAfterImport(Sender: TObject);
-begin
-  Memo1.Lines.Add('PSUtil has been imported and is directly available from Delphi');
-  PyIsActivated := True;
-  Test;
+  if not PyEmbed.Activate(PyEmbed.PythonVersion) then
+    Log('Python could not be activated');
 end;
 
 procedure TForm1.PyEmbedAfterActivate(Sender: TObject;
   const APythonVersion: string; const AActivated: Boolean);
-var
-  SomeCode: TStringList;
 begin
-  Memo1.Lines.Add('Python is active');
+  Log('Python is active');
+  if Not PyTorch1.IsInstalled then
+    begin
+      PyTorch1.ExtraIndexUrl('https://download.pytorch.org/whl/cu116');
+      PyTorch1.Install;
+    end
+  else
+    PyTorch1.Import;
   if Not PSUtil.IsInstalled then
-    PSUtil.Install;
-  PSUtil.Import;
+    PSUtil.Install
+  else
+    PSUtil.Import;
+  PyIsActivated := True;
+  Test;
 end;
 
-procedure TForm1.PSUtilAfterInstall(Sender: TObject);
+procedure TForm1.PackageAfterImport(Sender: TObject);
 begin
-  Memo1.Lines.Add('Python Package PSUtil has installed');
+  Log('Imported ' + TPyPackage(Sender).PyModuleName);
+end;
+
+procedure TForm1.PackageAfterInstall(Sender: TObject);
+begin
+  Log('Installed ' + TPyPackage(Sender).PyModuleName);
+  TPyPackage(Sender).Import;
 end;
 
 procedure TForm1.Test;
@@ -107,9 +135,10 @@ var
   cores: Variant;
   threads: Variant;
   memory: Variant;
+  I: Integer;
 begin
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('Some simple Python...');
+  Log('');
+  Log('Some simple Python...');
   SomeCode := TStringList.Create;
   try
     SomeCode.Add('import sys');
@@ -127,18 +156,46 @@ begin
 
   if PSUtil.IsImported then
     begin
-      Memo1.Lines.Add('');
+      Log('');
 
       cores := PSUtil.psutil.cpu_count(False);
       threads := PSUtil.psutil.cpu_count(True);
       memory := PSUtil.psutil.virtual_memory();
 
-      Memo1.Lines.Add('Show some info from PSUtil...');
-      Memo1.Lines.Add('PSUtil says this PC has ' +
+      Log('Show some info from PSUtil...');
+      Log('PSUtil says this PC has ' +
         cores + ' cores, ' +
         threads + ' threads' +
-        ' and ' + memory.total + ' bytes of memory');
-    end;
+        ' and ' + Format('%3.2f', [Single(memory.total) / (1024 * 1024 * 1024)])+ ' GB of available memory');
+    end
+  else
+    Log('PSUtil not imported');
+
+  if PyTorch1.IsImported then
+    begin
+      Log('');
+
+      var gpu_count: Variant := PyTorch1.torch.cuda.device_count();
+      var mps_available: Variant := PyTorch1.torch.backends.mps.is_available();
+      Log('Torch returned gpu_count = ' + gpu_count);
+      Log('Torch returned MPS = ' + mps_available);
+      if gpu_count > 0 then
+        begin
+          for I := 0 to gpu_count - 1 do
+            begin
+              var gpu_props: Variant := PyTorch1.torch.cuda.get_device_properties(I);
+
+              Log('Torch returned Name = ' + gpu_props.name);
+              Log('Torch returned CudaMajor = ' + gpu_props.major);
+              Log('Torch returned CudaMajor = ' + gpu_props.minor);
+              Log('Torch returned Memory = ' + gpu_props.total_memory);
+              Log('Torch returned CUs = ' + gpu_props.multi_processor_count);
+            end;
+        end;
+    end
+  else
+    Log('Torch not imported');
+
 end;
 
 end.
