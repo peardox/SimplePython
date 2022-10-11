@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 480
+  ClientHeight = 605
   ClientWidth = 640
   FormFactor.Width = 320
   FormFactor.Height = 480
@@ -14,15 +14,15 @@ object Form1: TForm1
     DataDetectorTypes = []
     Align = Client
     Size.Width = 640.000000000000000000
-    Size.Height = 440.000000000000000000
+    Size.Height = 565.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
     Viewport.Width = 636.000000000000000000
-    Viewport.Height = 436.000000000000000000
+    Viewport.Height = 561.000000000000000000
   end
   object Panel1: TPanel
     Align = Bottom
-    Position.Y = 440.000000000000000000
+    Position.Y = 565.000000000000000000
     Size.Width = 640.000000000000000000
     Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
@@ -30,12 +30,37 @@ object Form1: TForm1
     object Button1: TButton
       Position.X = 8.000000000000000000
       Position.Y = 8.000000000000000000
-      Size.Width = 80.000000000000000000
+      Size.Width = 100.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Button1'
       OnClick = Button1Click
+    end
+    object Button2: TButton
+      Position.X = 528.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 100.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Delete Python'
+      OnClick = Button2Click
+    end
+    object InstallForGPU: TSwitch
+      IsChecked = True
+      Position.X = 128.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 49.000000000000000000
+      Size.Height = 27.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+    object Label1: TLabel
+      Position.X = 184.000000000000000000
+      Position.Y = 12.000000000000000000
+      Text = 'Install for GPU'
+      TabOrder = 3
     end
   end
   object PyEng: TPythonEngine
@@ -63,6 +88,7 @@ object Form1: TForm1
     Top = 248
   end
   object PyEmbed: TPyEmbeddedResEnvironment39
+    BeforeSetup = PyEmbedBeforeSetup
     AfterSetup = PyEmbedAfterSetup
     AfterActivate = PyEmbedAfterActivate
     AutoLoad = False
@@ -80,8 +106,10 @@ object Form1: TForm1
     Left = 272
     Top = 312
   end
-  object PyEnvironmentAddOnGetPip1: TPyEnvironmentAddOnGetPip
+  object GetPip: TPyEnvironmentAddOnGetPip
     Environment = PyEmbed
+    OnExecute = GetPipExecute
+    OnExecuteError = GetPipExecuteError
     Left = 504
     Top = 312
   end
