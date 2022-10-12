@@ -83,6 +83,7 @@ object Form1: TForm1
     PyEnvironment = PyEmbed
     ManagerKind = pip
     AutoInstall = False
+    OnInstallError = PackageInstallError
     AfterInstall = PackageAfterInstall
     Left = 272
     Top = 248
@@ -102,6 +103,7 @@ object Form1: TForm1
     PythonEngine = PyEng
     PyEnvironment = PyEmbed
     ManagerKind = pip
+    OnInstallError = PackageInstallError
     AfterInstall = PackageAfterInstall
     Left = 272
     Top = 312

@@ -45,6 +45,7 @@ type
       const ADistribution: TPyDistribution; const AException: Exception);
     procedure PyEmbedBeforeSetup(Sender: TObject; const APythonVersion: string);
     procedure Button2Click(Sender: TObject);
+    procedure PackageInstallError(Sender: TObject; AErrorMessage: string);
   private
     { Private declarations }
     PythonIsActivated: Boolean;
@@ -255,6 +256,11 @@ end;
 procedure TForm1.PackageAfterInstall(Sender: TObject);
 begin
   Log('Installed ' + TPyPackage(Sender).PyModuleName);
+end;
+
+procedure TForm1.PackageInstallError(Sender: TObject; AErrorMessage: string);
+begin
+  Log('Installation Error for ' + TPyPackage(Sender).PyModuleName + ' :' + sLineBreak + AErrorMessage);
 end;
 
 // Some simple test Python + Delphi using Python packages
