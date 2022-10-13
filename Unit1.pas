@@ -9,7 +9,7 @@ uses
   PyEnvironment.Embeddable.Res, PyEnvironment.Embeddable.Res.Python39,
   FMX.Memo.Types, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
   FMX.PythonGUIInputOutput, PyCommon, PyModule, PyPackage, PSUtil, FMX.StdCtrls,
-  PyTorch, PyEnvironment.AddOn, PyEnvironment.AddOn.GetPip;
+  PyTorch;
 
 type
   // A helper class to make installing Torch GPU easier
@@ -26,7 +26,6 @@ type
     Panel1: TPanel;
     Button1: TButton;
     PyTorch1: TPyTorch;
-    GetPip: TPyEnvironmentAddOnGetPip;
     Button2: TButton;
     InstallForGPU: TSwitch;
     Label1: TLabel;
@@ -38,11 +37,6 @@ type
     procedure PackageAfterImport(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Log(const AMsg: String);
-    procedure GetPipExecute(const ASender: TObject;
-      const ATrigger: TPyEnvironmentaddOnTrigger;
-      const ADistribution: TPyDistribution);
-    procedure GetPipExecuteError(const ASender: TObject;
-      const ADistribution: TPyDistribution; const AException: Exception);
     procedure PyEmbedBeforeSetup(Sender: TObject; const APythonVersion: string);
     procedure Button2Click(Sender: TObject);
     procedure PackageInstallError(Sender: TObject; AErrorMessage: string);
@@ -138,24 +132,6 @@ begin
   // Refresh Button1 text
   SetPythonSetupButtonText;
   Button1.Enabled := True;
-end;
-
-// Show if we updated the pre-packaged PIP
-procedure TForm1.GetPipExecute(const ASender: TObject;
-  const ATrigger: TPyEnvironmentaddOnTrigger;
-  const ADistribution: TPyDistribution);
-begin
-  Log('');
-  Log('Updated PIP');
-end;
-
-// Show if we updating PIP went wrong
-procedure TForm1.GetPipExecuteError(const ASender: TObject;
-  const ADistribution: TPyDistribution; const AException: Exception);
-begin
-  Log('PIP Exception ');
-  Log('Class : ' + AException.ClassName);
-  Log('Error : ' + AException.Message);
 end;
 
 // If Python isn't installed then installk it otherwise just run

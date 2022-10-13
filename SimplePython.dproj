@@ -396,14 +396,6 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\android\3.9.12\arm64\python3.9" Configuration="Debug" Class="Python">
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\arm64-v8a\</RemoteDir>
-                        <Operation>1</Operation>
-                        <RemoteName>python3.9</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="Android64\Debug\styles.xml" Configuration="Debug" Class="AndroidSplashStyles">
                     <Platform Name="Android64">
                         <Overwrite>true</Overwrite>
@@ -414,6 +406,14 @@
                         <RemoteDir>.\</RemoteDir>
                         <Operation>0</Operation>
                         <RemoteName>python3-windows-3.9.12-amd64.zip</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\android\3.9.12\arm64\python3.9" Configuration="Debug" Class="Python">
+                    <Platform Name="Android64">
+                        <RemoteDir>library\lib\arm64-v8a\</RemoteDir>
+                        <Operation>1</Operation>
+                        <RemoteName>python3.9</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

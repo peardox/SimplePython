@@ -59,7 +59,7 @@ object Form1: TForm1
     object Label1: TLabel
       Position.X = 184.000000000000000000
       Position.Y = 12.000000000000000000
-      Text = 'Install for GPU'
+      Text = 'Install GPU Support'
       TabOrder = 3
     end
   end
@@ -106,13 +106,6 @@ object Form1: TForm1
     OnInstallError = PackageInstallError
     AfterInstall = PackageAfterInstall
     Left = 272
-    Top = 312
-  end
-  object GetPip: TPyEnvironmentAddOnGetPip
-    Environment = PyEmbed
-    OnExecute = GetPipExecute
-    OnExecuteError = GetPipExecuteError
-    Left = 504
     Top = 312
   end
 end
