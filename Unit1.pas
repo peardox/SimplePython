@@ -9,7 +9,8 @@ uses
   PyEnvironment.Embeddable.Res, PyEnvironment.Embeddable.Res.Python39,
   FMX.Memo.Types, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
   FMX.PythonGUIInputOutput, PyCommon, PyModule, PyPackage, PSUtil, FMX.StdCtrls,
-  PyTorch;
+  PyTorch, PyEnvironment.AddOn, PyEnvironment.AddOn.GetPip,
+  PyEnvironment.AddOn.EnsurePip;
 
 type
   // A helper class to make installing Torch GPU easier
@@ -29,6 +30,7 @@ type
     Button2: TButton;
     InstallForGPU: TSwitch;
     Label1: TLabel;
+    GetPip: TPyEnvironmentAddOnGetPip;
     procedure FormCreate(Sender: TObject);
     procedure PyEmbedAfterSetup(Sender: TObject; const APythonVersion: string);
     procedure PyEmbedAfterActivate(Sender: TObject;
@@ -40,6 +42,11 @@ type
     procedure PyEmbedBeforeSetup(Sender: TObject; const APythonVersion: string);
     procedure Button2Click(Sender: TObject);
     procedure PackageInstallError(Sender: TObject; AErrorMessage: string);
+    procedure GetPipExecute(const ASender: TObject;
+      const ATrigger: TPyEnvironmentaddOnTrigger;
+      const ADistribution: TPyDistribution);
+    procedure GetPipExecuteError(const ASender: TObject;
+      const ADistribution: TPyDistribution; const AException: Exception);
   private
     { Private declarations }
     PythonIsActivated: Boolean;
@@ -87,6 +94,25 @@ begin
   // Set the text of Button1 depending on whether we've installed
   // Python yet or not
   SetPythonSetupButtonText;
+end;
+
+// Show if we updated the pre-packaged PIP
+
+procedure TForm1.GetPipExecute(const ASender: TObject;
+  const ATrigger: TPyEnvironmentaddOnTrigger;
+  const ADistribution: TPyDistribution);
+begin
+  Log('');
+  Log('Updated PIP');
+end;
+
+// Show if we updating PIP went wrong
+procedure TForm1.GetPipExecuteError(const ASender: TObject;
+  const ADistribution: TPyDistribution; const AException: Exception);
+begin
+  Log('PIP Exception ');
+  Log('Class : ' + AException.ClassName);
+  Log('Error : ' + AException.Message);
 end;
 
 // This is a helper to simplify passing an ExtraIndexURL parameter to
@@ -259,7 +285,9 @@ begin
     // this is what you would usually do
     SomeCode.Add('import sys');
     SomeCode.Add('import io');
+    SomeCode.Add('import pip');
     SomeCode.Add('print("Python is", sys.version)');
+    SomeCode.Add('print("PIP version is ", pip.__version__)');
     SomeCode.Add('print("Python''s library paths are...")');
     SomeCode.Add('for p in sys.path:');
     SomeCode.Add('  print(p)');

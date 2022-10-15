@@ -108,4 +108,11 @@ object Form1: TForm1
     Left = 272
     Top = 312
   end
+  object GetPip: TPyEnvironmentAddOnGetPip
+    Environment = PyEmbed
+    OnExecute = GetPipExecute
+    OnExecuteError = GetPipExecuteError
+    Left = 456
+    Top = 312
+  end
 end
