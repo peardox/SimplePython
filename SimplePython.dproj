@@ -396,6 +396,14 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\android\3.9.12\arm64\python3.9" Configuration="Debug" Class="Python">
+                    <Platform Name="Android64">
+                        <RemoteDir>library\lib\arm64-v8a\</RemoteDir>
+                        <Operation>1</Operation>
+                        <RemoteName>python3.9</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Android64\Debug\styles.xml" Configuration="Debug" Class="AndroidSplashStyles">
                     <Platform Name="Android64">
                         <Overwrite>true</Overwrite>
@@ -406,14 +414,6 @@
                         <RemoteDir>.\</RemoteDir>
                         <Operation>0</Operation>
                         <RemoteName>python3-windows-3.9.12-amd64.zip</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\android\3.9.12\arm64\python3.9" Configuration="Debug" Class="Python">
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\arm64-v8a\</RemoteDir>
-                        <Operation>1</Operation>
-                        <RemoteName>python3.9</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -689,11 +689,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\python3-windows-3.9.12-win32.zip" Configuration="Release" Class="Python">
+                <DeployFile LocalName="Win32\Debug\SimplePython.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Operation>0</Operation>
-                        <RemoteName>python3-windows-3.9.12-win32.zip</RemoteName>
+                        <RemoteName>SimplePython.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -705,9 +703,11 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\SimplePython.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile Required="true" LocalName="$(PYTHONENVIRONMENTDIR)\python\python3-windows-3.9.12-win32.zip" Configuration="Release" Class="Python">
                     <Platform Name="Win32">
-                        <RemoteName>SimplePython.exe</RemoteName>
+                        <RemoteDir>.\</RemoteDir>
+                        <Operation>0</Operation>
+                        <RemoteName>python3-windows-3.9.12-win32.zip</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

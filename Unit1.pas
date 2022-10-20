@@ -273,6 +273,7 @@ var
   threads: Variant;
   memory: Variant;
   gpu_count: Variant;
+  gpu_props: Variant;
   I: Integer;
 begin
   Log('Some simple Python...');
@@ -350,12 +351,12 @@ begin
               Log('GPU #' + IntToStr(I));
               // This stores a load of information about the currently
               // selected GPU so we can prit it out
-              var gpu_props: Variant := PyTorch1.torch.cuda.get_device_properties(I);
+              gpu_props := PyTorch1.torch.cuda.get_device_properties(I);
 
               Log('Torch returned Name = ' + gpu_props.name);
               Log('Torch returned CudaMajor = ' + gpu_props.major);
               Log('Torch returned CudaMinor = ' + gpu_props.minor);
-              Log('Torch returned Memory = ' + gpu_props.total_memory);
+              Log(Format('Torch returned GPU Memory = %3.2f', [Single(gpu_props.total_memory) / (1024 * 1024 * 1024)])+ ' GB');
               Log('Torch returned CUs = ' + gpu_props.multi_processor_count);
             end;
         end;
